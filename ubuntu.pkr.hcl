@@ -4,6 +4,7 @@ locals {
     "/user-data" = templatefile("${abspath(path.root)}/cidata/user-data.pkrtpl.hcl", {
       os_username           = var.os_username
       os_password_encrypted = var.os_password_encrypted
+      ssh_public_key        = var.ssh_public_key
     })
   }
   data_source_command = "ds=\"nocloud-net;seedfrom=http://{{.HTTPIP}}:{{.HTTPPort}}/\""
@@ -67,16 +68,22 @@ build {
       "snap install oracle-cloud-agent --classic",
       "truncate -s 0 /etc/machine-id",
       "truncate -s 0 /var/lib/dbus/machine-id",
-      // "rm -f /home/ubuntu/.ssh/authorized_keys",
-      // "rm -f /etc/netplan/00-installer-config.yaml",
-      // "rm -f /etc/cloud/cloud.cfg.d/99-installer.cfg",
-      // "rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
-      // "rm -f /etc/cloud/cloud.cfg.d/curtin-preserve-sources.cfg",
-      // "rm -f /etc/ssh/sshd_config.d/50-cloud-init.conf",
-      // "sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/g' /etc/ssh/sshd_config",
+      "rm -f /home/ubuntu/.ssh/authorized_keys",
+      "rm -f /etc/netplan/00-installer-config.yaml",
+      "rm -f /etc/cloud/cloud.cfg.d/99-installer.cfg",
+      "rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
+      "rm -f /etc/cloud/cloud.cfg.d/curtin-preserve-sources.cfg",
+      "rm -f /etc/ssh/sshd_config.d/50-cloud-init.conf",
+      "sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/g' /etc/ssh/sshd_config",
       "cloud-init clean"
     ]
   }
+  // post-processor "vagrant" {
+  //   compression_level   = 6
+  //   keep_input_artifact = true
+  //   output              = "output/${var.vm_name}.box"
+  //   //vagrantfile_template = "vagrant.rb.j2"
+  // }
 }
 # oci os object put -bn images --file output/ubuntu.qcow2
 # oci compute image import from-object --bucket-name images --compartment-id $OCI_CID --namespace $OCI_NS --operating-system $OS_TYPE \

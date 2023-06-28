@@ -63,6 +63,7 @@ build {
       "apt-get --yes autoremove",
       #"apt-get --yes install ec2-instance-connect",
       #"apt-get --yes install open-vm-tools",
+      "apt-get --yes install qemu-guest-agent",
       "apt-get clean",
       #"snap install amazon-ssm-agent --classic",
       "snap install oracle-cloud-agent --classic",

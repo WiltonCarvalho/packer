@@ -55,16 +55,28 @@ source "qemu" "ubuntu" {
 
 build {
   sources = ["source.qemu.ubuntu"]
+  provisioner "file" {
+    source      = "ubuntu_oci_rules.v4"
+    destination = "/tmp/ubuntu_oci_rules.v4"
+  }
+  provisioner "file" {
+    source      = "ubuntu_oci_pkgs.txt"
+    destination = "/tmp/ubuntu_oci_pkgs.txt"
+  }
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     inline = [
       "apt-get update",
-      "apt-get --yes dist-upgrade",
-      "apt-get --yes autoremove",
       #"apt-get --yes install ec2-instance-connect",
       #"apt-get --yes install open-vm-tools",
-      "apt-get --yes install qemu-guest-agent",
+      "apt-get --yes install qemu-guest-agent dselect",
+      "dselect update",
+      "dpkg --set-selections < /tmp/ubuntu_oci_pkgs.txt",
+      "DEBIAN_FRONTEND=noninteractive apt-get -y dselect-upgrade",
+      "apt-get --yes dist-upgrade",
+      "apt-get --yes autoremove",
       "apt-get clean",
+      "mv /tmp/ubuntu_oci_rules.v4 /etc/iptables/rules.v4",
       #"snap install amazon-ssm-agent --classic",
       "snap install oracle-cloud-agent --classic",
       "truncate -s 0 /etc/machine-id",

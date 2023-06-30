@@ -46,6 +46,10 @@ autoinstall:
   #   id: ubuntu-server-minimized
   packages:
     - grub-pc-bin
+    - grub-efi-amd64-bin
+    - grub-efi-amd64-signed
+    - grub-gfxpayload-lists
+    - shim-signed
     - tmux
   early-commands:
     # Disable SSH in the installer to avoid packer connecting to it

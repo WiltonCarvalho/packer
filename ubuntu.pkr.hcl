@@ -66,15 +66,17 @@ build {
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     inline = [
+      "set -ex",
+      "export DEBIAN_FRONTEND=noninteractive",
       "apt-get update",
-      #"apt-get --yes install ec2-instance-connect",
-      #"apt-get --yes install open-vm-tools",
-      "apt-get --yes install qemu-guest-agent dselect",
+      #"apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y install ec2-instance-connect",
+      #"apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y install open-vm-tools",
+      "apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y install qemu-guest-agent dselect",
       "dselect update",
       "dpkg --set-selections < /tmp/ubuntu_oci_pkgs.txt",
-      "DEBIAN_FRONTEND=noninteractive apt-get -y dselect-upgrade",
-      "apt-get --yes dist-upgrade",
-      "apt-get --yes autoremove",
+      "apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y dselect-upgrade",
+      "apt-get -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -y dist-upgrade",
+      "apt-get -y autoremove",
       "apt-get clean",
       "mv /tmp/ubuntu_oci_rules.v4 /etc/iptables/rules.v4",
       #"snap install amazon-ssm-agent --classic",
